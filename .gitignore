@@ -1,0 +1,10 @@
+node_modules/
+.DS_Store
+__pycache__/
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+test-results/
+build/
+.gradle/

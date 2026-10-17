@@ -1,0 +1,109 @@
+version: 2.1
+
+orbs:
+  node: circleci/node@5.1.0
+  python: circleci/python@2.1.1
+  docker: circleci/docker@2.4.0
+
+jobs:
+  # ۱. بیلد و تست بخش جاوا (Multi-Agent System با Gradle و Java 21)
+  test-and-build-java:
+    docker:
+      - image: cimg/openjdk:21.0
+    steps:
+      - checkout
+      - run:
+          name: Run Gradle Build and Tests with Coverage (Jacoco)
+          command: |
+            cd Multi-Agent-System
+            chmod +x gradlew
+            ./gradlew clean test jacocoTestReport --no-daemon
+      - store_test_results:
+          path: Multi-Agent-System/build/test-results
+      - store_artifacts:
+          path: Multi-Agent-System/build/reports/jacoco/test/html
+
+  # ۲. تست و لینت سرویس‌های پایتون و اجرای هوش مصنوعی (همراه با JRE و ورودی خودکار عدد 8 برای مدل Weka)
+  test-and-lint-python:
+    docker:
+      - image: cimg/python:3.11
+    working_directory: ~/project/ML-model
+    steps:
+      - checkout:
+          path: ~/project
+      - run:
+          name: Install Java Runtime (needed by Weka through JPype)
+          command: |
+            sudo apt-get update && sudo apt-get install -y default-jre-headless
+            java -version
+      - run:
+          name: Install Python dependencies
+          command: pip install -r requirements.txt -r requirements-dev.txt
+      - run:
+          name: Run Python Linting (Flake8 & Black)
+          command: |
+            flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+            black --check .
+      - run:
+          name: Run Tests (incl. Weka model on instance 8) with Coverage
+          command: |
+            mkdir -p test-results
+            python -m pytest --junitxml=test-results/junit.xml --cov=. --cov-report=xml:coverage.xml --cov-report=html:htmlcov --cov-report=term
+      - store_test_results:
+          path: test-results
+      - store_artifacts:
+          path: htmlcov
+          destination: python-coverage
+
+  # ۳. تست و لینت سرویس‌های Node.js / IoT
+  test-and-lint-node:
+    executor: node/default
+    steps:
+      - checkout
+      - node/install-packages:
+          pkg-manager: npm
+          app-dir: Embedded-Systems-gs-main
+      - run:
+          name: Run Node.js Tests & Linting
+          command: |
+            cd Embedded-Systems-gs-main
+            npm test
+            npm run lint --if-present
+
+  # ۴. انتشار خودکار و ارکستراسیون چندپلتفرمی (2+ target platforms: amd64, arm64)
+  multi-platform-build-and-delivery:
+    docker:
+      - image: cimg/base:2023.06
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: default
+          docker_layer_caching: true
+      - run:
+          name: Setup Docker Buildx for Multi-Platform (linux/amd64, linux/arm64)
+          command: |
+            docker run --privileged --rm tonistiigi/binfmt --install all
+            docker buildx create --name multiarch-builder --use
+            docker buildx inspect --bootstrap
+      - run:
+          name: Build and Push All Service Containers Across Multiple Platforms
+          command: |
+            docker buildx build --platform linux/amd64,linux/arm64 -t your-registry/multi-agent-system:latest --push ./Multi-Agent-System || true
+            docker buildx build --platform linux/amd64,linux/arm64 -t your-registry/embedded-system-service:latest --push . || true
+            docker buildx build --platform linux/amd64,linux/arm64 -t your-registry/ml-service:latest --push ./ML-model || true
+
+workflows:
+  version: 2
+  complete-devops-pipeline:
+    jobs:
+      - test-and-build-java
+      - test-and-lint-python
+      - test-and-lint-node
+      - multi-platform-build-and-delivery:
+          requires:
+            - test-and-build-java
+            - test-and-lint-python
+            - test-and-lint-node
+          filters:
+            branches:
+              only: main

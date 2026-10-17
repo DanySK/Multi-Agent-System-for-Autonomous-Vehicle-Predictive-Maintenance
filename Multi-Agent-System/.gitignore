@@ -1,0 +1,9 @@
+build/
+.gradle/
+*.class
+.idea/
+*.iml
+gradlew.bat
+lib/
+.DS_Store
+settings.gradle
