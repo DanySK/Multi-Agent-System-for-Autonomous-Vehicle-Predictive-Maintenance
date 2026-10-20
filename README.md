@@ -91,11 +91,20 @@ make up        # build and start the whole stack with docker compose
 make help      # list all targets
 ```
 
-| Platform | Lint | Tests | Coverage |
-| --- | --- | --- | --- |
-| JVM | Checkstyle | JUnit 5 (domain, use cases, IoT client, PostgreSQL repository) | JaCoCo |
-| Node.js | ESLint | `node:test` (HTTP API, MQTT with an in-process broker) | c8 |
-| Python | flake8, black | pytest (incl. the real Weka model, database insert) | pytest-cov |
+Or run the published images without building: `docker compose pull && docker compose up -d`.
+
+| Service | Port | Image |
+| --- | --- | --- |
+| PostgreSQL | - | postgres:16
+| IoT control unit (Node.js) | 3002 | `ghcr.io/dias266/spe-iot-control-unit` |
+| Multi-agent system (Java/Jason) | - | `ghcr.io/dias266/spe-mas` |
+| ML prediction (Python/Weka) | - | `ghcr.io/dias266/spe-ml-service` |
+| Dashboard backend | 3000 | `ghcr.io/dias266/spe-dashboard-backend` |
+| Dashboard frontend | 8080 | `ghcr.io/dias266/spe-dashboard-frontend` |
+| MQTT broker (Mosquitto) | 1883 | `eclipse-mosquitto:2` |
+| Node-RED | 1880 | `nodered/node-red:4.0` |
+
+CI/CD runs on CircleCI: see [`.circleci/config.yml`](.circleci/config.yml).
 
 The MQTT path is tested at three levels: `Embedded-Systems-gs-main/test/mqtt.test.js` (control unit
 against an in-process broker), `IoTControlUnitClientTest` (the Java MAS side of the same HTTP
