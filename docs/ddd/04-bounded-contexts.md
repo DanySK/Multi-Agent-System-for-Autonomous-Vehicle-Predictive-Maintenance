@@ -29,8 +29,7 @@ necessary but could be replaced by standard solutions.
 Arrows point from **upstream** (U, the supplier of a model or events) to **downstream** (D, the
 consumer). Labels give the relationship pattern and what crosses the boundary.
 
-![Context Map Diagram](docs/ddd/diagram-with-circleCi.png)
-
+![Context Map Diagram](diagram-with-circleCi.png)
 ### Relationships
 
 | Upstream → Downstream | Pattern | What crosses | Why this pattern |
