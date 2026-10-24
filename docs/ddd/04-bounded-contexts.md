@@ -29,31 +29,7 @@ necessary but could be replaced by standard solutions.
 Arrows point from **upstream** (U, the supplier of a model or events) to **downstream** (D, the
 consumer). Labels give the relationship pattern and what crosses the boundary.
 
-```mermaid
-flowchart LR
-    TH["<b>Vehicle Telemetry & Health</b><br/>supporting"]
-    MP["<b>Maintenance Prediction</b><br/>supporting"]
-    FC["<b>Fleet Coordination</b><br/>CORE"]
-    SB["<b>Service & Booking</b><br/>CORE"]
-    TL["<b>Trust & Service Ledger</b><br/>supporting"]
-    BC[("Blockchain<br/>generic")]
-    MQ[("MQTT broker<br/>generic")]
-    WK[("Weka<br/>generic")]
-    PG[("PostgreSQL<br/>generic")]
-
-    TH -- "U → D · Open Host Service + Published Language<br/>AnomalyDetected, TelemetryRecord" --> FC
-    TH -- "U → D · Customer / Supplier<br/>telemetry features" --> MP
-    MP -- "U → D · Anti-Corruption Layer<br/>MaintenanceInsight" --> FC
-    FC <-- "Partnership<br/>MaintenanceRequest ⇄ BookingAccepted / Deferred / Declined" --> SB
-    SB -- "U → D · Customer / Supplier<br/>ServiceCompleted" --> TL
-    FC -- "Customer / Supplier<br/>endorsement decisions, fleet anomaly log" --> TL
-    TL -- "Anti-Corruption Layer<br/>BlockchainPort" --> BC
-    FC -- "Customer / Supplier<br/>TelemetryPublisherPort (post-service telemetry)" --> TH
-    MQ -- "Conformist" --> TH
-    MP -- "Anti-Corruption Layer" --> WK
-    TL -- "Repository<br/>ServiceRecordRepository" --> PG
-    MP -- "maintenance_prediction" --> PG
-```
+![Context Map Diagram](docs/ddd/diagram-with-circleCi.png)
 
 ### Relationships
 
