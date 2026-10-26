@@ -49,8 +49,8 @@ ML service (Python + Weka) ──► PostgreSQL: maintenance_prediction      Pos
 Needs [Docker](https://www.docker.com/) with Docker Compose.
 
 ```bash
-git clone https://github.com/Dias266/spe-devops.git
-cd spe-devops
+git clone https://github.com/Dias266/Multi-Agent-System-for-Autonomous-Vehicle-Predictive-Maintenance.git
+cd Multi-Agent-System-for-Autonomous-Vehicle-Predictive-Maintenance
 docker compose up -d --build     # or: docker compose pull && docker compose up -d   (published images)
 ```
 
