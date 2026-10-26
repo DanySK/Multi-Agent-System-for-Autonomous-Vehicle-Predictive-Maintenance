@@ -65,6 +65,5 @@ project for Software Process Engineering.
 ### Removed
 - Committed `node_modules`, `.DS_Store` and IDE cache files.
 
-[Unreleased]: https://github.com/Dias266/spe-devops/compare/v0.2.0...HEAD
-[0.2.0]: https://github.com/Dias266/spe-devops/compare/v0.1.0...v0.2.0
-[0.1.0]: https://github.com/Dias266/spe-devops/releases/tag/v0.1.0
+[0.2.0]: https://github.com/Dias266/Multi-Agent-System-for-Autonomous-Vehicle-Predictive-Maintenance/compare/v0.1.0...v0.2.0
+[0.1.0]: https://github.com/Dias266/Multi-Agent-System-for-Autonomous-Vehicle-Predictive-Maintenance/releases/tag/v0.1.0
